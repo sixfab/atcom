@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from atcom import ATCom
 
 at = ATCom()

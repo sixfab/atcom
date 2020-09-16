@@ -1,10 +1,12 @@
-'''
+#!/usr/bin/python3
+
+"""
   Sixfab atcom API 
   -
   API for AT communication for Sixfab LTE modules. 
   -
   Created by Yasin Kaya (selengalp), September 14, 2020.
-'''
+"""
 
 import time
 import serial
@@ -33,7 +35,11 @@ def delay(ms):
 ### ATCom Class ###############################
 ###############################################
 
-class ATCom:     
+class ATCom:
+	""" 
+    Sixfab AT Communication API Class.
+    
+    """   
 	timeout = TIMEOUT # default timeout for function and methods on this library.
 	
 	response = "" # variable for modem self.responses
@@ -64,6 +70,25 @@ class ATCom:
 	
 	# Function for getting modem response
 	def get_response(self, desired_response, errors):
+		"""Function for getting modem response
+        
+        Parameters
+        -----------	
+		desired_response : str
+        Success message of modem
+
+		errors : str[]
+        Error messages of modem	
+
+        timeout : int [seconds]
+        timeout while receiving the response (default is TIMEOUT)
+
+        Returns
+        ------- 
+        response : str 
+        Actual message that received from modem  
+        """
+
 		if (ser.isOpen() == False):
 			ser.open()
 		while 1:	
@@ -81,6 +106,13 @@ class ATCom:
 	
 	# Function for sending at comamand to module
 	def send_at_comm_once(self, command):
+		"""Function for sending AT commmand to modem
+        
+        Parameters
+        -----------	
+		command : str
+        message that sent to modem 
+        """
 		if (ser.isOpen() == False):
 			ser.open()		
 		self.compose = ""
@@ -91,6 +123,27 @@ class ATCom:
 		
 	# Function for sending at command to BG96_AT.
 	def send_at_comm(self, command, desired_response, err_messages, timeout = None):
+		"""Function for sending/getting AT command/response to/from modem
+        
+        Parameters
+        -----------	
+		command : str
+        Success message of modem
+
+		desired_response : str
+        Success message of modem
+
+		err_messages : str[]
+        Error messages of modem	
+
+        timeout : int [seconds]
+        timeout while receiving the response (default is TIMEOUT)
+
+        Returns
+        ------- 
+        response : str 
+        Actual message that received from modem  
+        """
 		
 		if timeout is None:
 			timeout = self.timeout
