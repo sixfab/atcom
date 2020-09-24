@@ -46,17 +46,14 @@ while true ; do
     ping -c 2 -s 0 8.8.8.8 >> /dev/null
     PINGG=$? 
 
-    echo "PINGI: " $PINGI "PINGG: " $PINGG
+   # echo "PINGI: " $PINGI "PINGG: " $PINGG
 
 	if [[ $PINGI -eq 0 ]] && [[ $PINGG -eq 0 ]]; then
 		ifconfig | grep wlan0 >> /dev/null
 		if [[ $? -eq 0 ]]; then
-			# sudo ifconfig wlan0 down
+			sudo ifconfig wlan0 down
 			echo $(date "+%H:%M:%S - %Y/%m/%d :") "Wifi turned OFF"
-        else
-            # wifi is already turned off
-            echo "wifi is already off"
-		fi
+        	fi
 	else
         echo $(date "+%H:%M:%S - %Y/%m/%d :") "Cellular connection is lost. Testing modem configurations..."
         python3 at_test.py AT+CREG? OK ERROR
@@ -78,7 +75,7 @@ while true ; do
 		else
 			ifconfig | grep wlan0 >> /dev/null
 			if [[ $? -ne 0 ]]; then
-			# sudo ifconfig wlan0 up
+			sudo ifconfig wlan0 up
 			echo $(date "+%H:%M:%S - %Y/%m/%d :") "wifi turned ON for 1 minute"
 			sleep 1m
 			fi
