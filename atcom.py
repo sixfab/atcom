@@ -58,7 +58,7 @@ class ATCom:
 		ser.bytesize=serial.EIGHTBITS
 		ser.rtscts=rtscts
 		ser.dsrdtr=dsrdtr
-		debug_print(self.module + " initialized!")
+		#debug_print(self.module + " initialized!")
 			
 	def __del__(self): 
 		ser.close()

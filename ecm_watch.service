@@ -1,0 +1,14 @@
+[Unit]
+Description=ECM Watch
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /opt/ecm_watch.sh
+WorkingDirectory=/opt/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
