@@ -3,7 +3,7 @@ Description=ECM Watch
 After=network.target
 
 [Service]
-ExecStart=/bin/bash /opt/atcom_api/ecm_watch.sh |& tee -a log.txt
+ExecStart=/bin/bash ecm_watch_logger.sh
 WorkingDirectory=/opt/atcom_api
 StandardOutput=inherit
 StandardError=inherit
