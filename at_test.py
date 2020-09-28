@@ -7,9 +7,9 @@ at = ATCom()
 
 try:
     response = at.send_at_comm(sys.argv[1],sys.argv[2], sys.argv[3])
-except RuntimeError:
-    print("Runtime Error")
-except TimeoutError:
-    print("Timeout Error")
+except RuntimeError as err:
+    print(str(err))
+except TimeoutError as err:
+    print(str(err))
 else:
     print(response)

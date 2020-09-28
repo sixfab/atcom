@@ -13,7 +13,11 @@ import serial
 
 # global variables
 TIMEOUT = 3 # seconds
-ser = serial.Serial()
+
+try:
+	ser = serial.Serial()
+except:
+	print("Serial exception") 
 
 ###########################################
 ### Private Methods #######################
@@ -69,7 +73,7 @@ class ATCom:
 		self.compose = ""
 	
 	# Function for getting modem response
-	def get_response(self, desired_response, errors):
+	def get_response(self, desired_response, err_messages, timeout):
 		"""Function for getting modem response
         
         Parameters
@@ -88,21 +92,32 @@ class ATCom:
         response : str 
         Actual message that received from modem  
         """
-
-		if (ser.isOpen() == False):
-			ser.open()
-		while 1:	
+	
+		if(ser.isOpen() == True):
 			self.response =""
-			while(ser.inWaiting()):
-				self.response += ser.read(ser.inWaiting()).decode('utf-8', errors='ignore')
+			timer = millis()
 			
-			if(self.response.find(desired_response) != -1):
-				#debug_print(self.response)
-				return self.response
-			
-			for err_msg in errors:
-				if(self.response.find(err_msg) != -1):
-					raise RuntimeError("Module responsed with an error message!")
+			while 1:
+				if( millis() - timer < timeout): 
+					while(ser.inWaiting()):
+						try: 
+							self.response += ser.read(ser.inWaiting()).decode('utf-8', errors='ignore')
+							delay(100)
+						except:
+							raise RuntimeError("An error occured while reading from serial port")
+
+					if(self.response.find(desired_response) != -1):
+						return self.response
+					
+					else:
+							if(self.response.find(err_messages) != -1):
+								raise RuntimeError("Module responsed with error message --> " + str(err_messages))
+				else:
+					raise TimeoutError("timeout!")
+		else:
+			raise RuntimeError("Serial Port is closed or doesn't exist...")
+
+
 	
 	# Function for sending at comamand to module
 	def send_at_comm_once(self, command):
@@ -113,13 +128,20 @@ class ATCom:
 		command : str
         message that sent to modem 
         """
-		if (ser.isOpen() == False):
-			ser.open()		
-		self.compose = ""
-		self.compose = str(command) + "\r"
-		ser.reset_input_buffer()
-		ser.write(self.compose.encode())
-		#debug_print(self.compose)
+		try:
+			if (ser.isOpen() == False):
+				ret_val = ser.open()
+		except serial.SerialException:
+			raise RuntimeError("Serial port couldn't be opened!")
+		else:
+			self.compose = ""
+			self.compose = str(command) + "\r"
+			try:
+				ser.reset_input_buffer()
+				ser.write(self.compose.encode())
+			except serial.SerialException:
+				raise RuntimeError("Occured an error while writing to serial port!")
+
 		
 	# Function for sending at command to BG96_AT.
 	def send_at_comm(self, command, desired_response, err_messages, timeout = None):
@@ -149,25 +171,4 @@ class ATCom:
 			timeout = self.timeout
 
 		self.send_at_comm_once(command)
-		
-		self.response =""
-		timer = millis()
-		while 1:
-			if( millis() - timer < timeout): 
-				while(ser.inWaiting()):
-					try: 
-						self.response += ser.read(ser.inWaiting()).decode('utf-8', errors='ignore')
-						delay(100)
-					except Exception as e:
-						debug_print(e.Message)
-
-				if(self.response.find(desired_response) != -1):
-					return self.response
-				
-				else:
-					for x in err_messages:
-						if(self.response.find(x) != -1):
-							raise RuntimeError("Module responsed with error message --> " + str(x))
-			else:
-				raise TimeoutError("timeout!")
-			
+		return self.get_response(desired_response,err_messages, timeout)
