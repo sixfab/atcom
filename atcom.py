@@ -10,6 +10,7 @@
 
 import time
 import serial
+import sys
 
 # global variables
 TIMEOUT = 3 # seconds
@@ -17,7 +18,7 @@ TIMEOUT = 3 # seconds
 try:
 	ser = serial.Serial()
 except:
-	print("Serial exception") 
+	raise RuntimeError("Serial port couldn't be opened!") 
 
 ###########################################
 ### Private Methods #######################
@@ -131,7 +132,7 @@ class ATCom:
 		try:
 			if (ser.isOpen() == False):
 				ret_val = ser.open()
-		except serial.SerialException:
+		except:
 			raise RuntimeError("Serial port couldn't be opened!")
 		else:
 			self.compose = ""
@@ -139,7 +140,7 @@ class ATCom:
 			try:
 				ser.reset_input_buffer()
 				ser.write(self.compose.encode())
-			except serial.SerialException:
+			except:
 				raise RuntimeError("Occured an error while writing to serial port!")
 
 		
@@ -172,3 +173,30 @@ class ATCom:
 
 		self.send_at_comm_once(command)
 		return self.get_response(desired_response,err_messages, timeout)
+
+def __main__():
+	
+	if(len(sys.argv) is not 4):
+		raise RuntimeError("3 arguments are required, you give " + str(len(sys.argv)-1))
+		return 1
+
+	at = ATCom()
+	
+	try:
+		response = at.send_at_comm(sys.argv[1],sys.argv[2], sys.argv[3])
+	except RuntimeError as err:
+		print(str(err))
+	except TimeoutError as err:
+		print(str(err))
+	else:
+		print(response)
+
+
+if __name__ == '__main__':
+    # execute only if run as the entry point into the program
+	try:
+		__main__()
+	except RuntimeError as err:
+		print(str(err))
+	
+	

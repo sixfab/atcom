@@ -6,7 +6,7 @@ at = ATCom()
 
 # 1
 try:
-    response = at.send_at_comm("AT\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -16,7 +16,7 @@ else:
 
 # 2
 try:
-    response = at.send_at_comm("ATI\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("ATI\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -26,7 +26,7 @@ else:
 
 # 3
 try:
-    response = at.send_at_comm("ATV1\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("ATV1\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -36,7 +36,7 @@ else:
 
 # 4
 try:
-    response = at.send_at_comm("ATE1\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("ATE1\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -46,7 +46,7 @@ else:
 
 # 5
 try:
-    response = at.send_at_comm("AT+CMEE=2\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT+CMEE=2\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -56,7 +56,7 @@ else:
 
 # 6
 try:
-    response = at.send_at_comm("AT+IPR?\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT+IPR?\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -66,7 +66,7 @@ else:
 
 # 7
 try:
-    response = at.send_at_comm("AT+GSN\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT+GSN\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -76,7 +76,7 @@ else:
 
 # 8
 try:
-    response = at.send_at_comm("AT+QURCCFG=\"urcport\",\"usbat\"\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT+QURCCFG=\"urcport\",\"usbat\"\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -86,7 +86,7 @@ else:
 
 # 9
 try:
-    response = at.send_at_comm("AT+CPIN?\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT+CPIN?\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
@@ -96,7 +96,7 @@ else:
 
 # 10
 try:
-    response = at.send_at_comm("AT+QCCID\r\n","OK", ["ERROR", "CME ERROR"])
+    response = at.send_at_comm("AT+QCCID\r\n","OK", "ERROR")
 except RuntimeError:
     print("Runtime Error")
 except TimeoutError:
