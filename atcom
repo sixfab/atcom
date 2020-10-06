@@ -11,9 +11,16 @@
 import time
 import serial
 import sys
+import os
+from dotenv import load_dotenv
 
-# global variables
-TIMEOUT = 3 # seconds
+load_dotenv()
+
+BAUDRATE = os.getenv("BAUDRATE")
+SERIAL_PORT = os.getenv("SERIAL_PORT")
+RTS_CTS = os.getenv("RTS_CTS")
+DSR_DTR = os.getenv("DSR_DTR")
+TIMEOUT = os.getenv("COMMAND_TIMEOUT")
 
 try:
 	ser = serial.Serial()
@@ -45,17 +52,12 @@ class ATCom:
     Sixfab AT Communication API Class.
     
     """   
-	timeout = TIMEOUT # default timeout for function and methods on this library.
-	
+	timeout = float(TIMEOUT) # default timeout for function and methods on this library.
 	response = "" # variable for modem self.responses
 	compose = "" # variable for command self.composes
 	
-    # Special Characters
-	CTRL_Z = '\x1A'
-	
 	# Initializer function
-	def __init__(self, serial_port="/dev/ttyUSB2", serial_baudrate=115200, module="Quectel EC25", rtscts=False, dsrdtr=False):
-		self.module = module
+	def __init__(self, serial_port=SERIAL_PORT, serial_baudrate=BAUDRATE, rtscts=RTS_CTS, dsrdtr=DSR_DTR):
 		ser.port = serial_port
 		ser.baudrate = serial_baudrate
 		ser.parity=serial.PARITY_NONE
@@ -63,8 +65,7 @@ class ATCom:
 		ser.bytesize=serial.EIGHTBITS
 		ser.rtscts=rtscts
 		ser.dsrdtr=dsrdtr
-		#debug_print(self.module + " initialized!")
-			
+
 	def __del__(self): 
 		ser.close()
 		ser.__del__()
@@ -176,24 +177,32 @@ class ATCom:
 
 def __main__():
 	
-	if(len(sys.argv) is not 4):
-		raise RuntimeError("3 arguments are required, you give " + str(len(sys.argv)-1))
+	if(len(sys.argv) < 4):
+		raise RuntimeError("min. 3 arguments are required, you give " + str(len(sys.argv)-1))
 		return 1
 
 	at = ATCom()
 	
+	if(len(sys.argv) >= 5):
+		timeout = float(sys.argv[4])
+	else:
+		timeout = None
+
 	try:
-		response = at.send_at_comm(sys.argv[1],sys.argv[2], sys.argv[3])
+		response = at.send_at_comm(sys.argv[1],sys.argv[2], sys.argv[3], timeout)
 	except RuntimeError as err:
 		print(str(err))
+		return 1
 	except TimeoutError as err:
-		print(str(err))
+		print (str(err)) 
+		return 2
 	else:
 		print(response)
+		return 0
 
 
 if __name__ == '__main__':
-    # execute only if run as the entry point into the program
+	
 	try:
 		__main__()
 	except RuntimeError as err:

@@ -1,1 +1,2 @@
 pyserial==3.4
+python-dotenv=0.14.0
