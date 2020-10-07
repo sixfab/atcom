@@ -13,8 +13,10 @@ import serial
 import sys
 import os
 from dotenv import load_dotenv
+from pathlib import Path  # Python 3.6+ only
 
-load_dotenv()
+env_path = Path('/opt/sixfab/atcom/') / '.env'
+load_dotenv(dotenv_path=env_path)
 
 BAUDRATE = os.getenv("BAUDRATE")
 SERIAL_PORT = os.getenv("SERIAL_PORT")
@@ -52,7 +54,6 @@ class ATCom:
     Sixfab AT Communication API Class.
     
     """   
-	timeout = float(TIMEOUT) # default timeout for function and methods on this library.
 	response = "" # variable for modem self.responses
 	compose = "" # variable for command self.composes
 	
@@ -170,7 +171,7 @@ class ATCom:
         """
 		
 		if timeout is None:
-			timeout = self.timeout
+			timeout = float(TIMEOUT)
 
 		self.send_at_comm_once(command)
 		return self.get_response(desired_response,err_messages, timeout)
