@@ -114,7 +114,7 @@ class ATCom:
 					
 					else:
 							if(self.response.find(err_messages) != -1):
-								raise RuntimeError("Module responsed with error message --> " + str(err_messages))
+								raise RuntimeError("Module responsed with error message --> " + str(self.response))
 				else:
 					raise TimeoutError("timeout!")
 		else:
