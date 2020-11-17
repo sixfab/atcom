@@ -10,187 +10,176 @@
 
 import time
 import serial
+import click
 import sys
 import os
-from dotenv import load_dotenv
-from pathlib import Path  # Python 3.6+ only
+import yaml
 
-env_path = Path('/opt/sixfab/atcom_api') / '.env'
-load_dotenv(dotenv_path=env_path)
+class Logger:
+	def __init__(self, verbose=False):
+		self.verbose = verbose
 
-BAUDRATE = os.getenv("BAUDRATE")
-SERIAL_PORT = os.getenv("SERIAL_PORT")
-RTS_CTS = os.getenv("RTS_CTS")
-DSR_DTR = os.getenv("DSR_DTR")
-TIMEOUT = os.getenv("COMMAND_TIMEOUT")
+	def info(self, text):
+		if self.verbose:
+			print("[INFO] ", text)
 
-try:
-	ser = serial.Serial()
-except:
-	raise RuntimeError("Serial port couldn't be opened!") 
+	def error(self, text):
+		print("[ERR]  ", text)
+		sys.exit(1)
 
-###########################################
-### Private Methods #######################
-###########################################
 
-# Function for printing debug message 
-def debug_print(message):
-	print(message)
-
-# Function for getting time as miliseconds
 def millis():
+	"""
+	Function for getting time as miliseconds
+	"""
 	return int(time.time())
 
-# Function for delay as miliseconds
+
 def delay(ms):
+	"""
+	Function for delay as miliseconds
+	"""
 	time.sleep(float(ms/1000.0))
 
-###############################################
-### ATCom Class ###############################
-###############################################
 
 class ATCom:
 	""" 
-    Sixfab AT Communication API Class.
-    
-    """   
-	response = "" # variable for modem self.responses
-	compose = "" # variable for command self.composes
+    Sixfab AT Communication API Class
+    """
 	
-	# Initializer function
-	def __init__(self, serial_port=SERIAL_PORT, serial_baudrate=BAUDRATE, rtscts=RTS_CTS, dsrdtr=DSR_DTR):
-		ser.port = serial_port
-		ser.baudrate = serial_baudrate
-		ser.parity=serial.PARITY_NONE
-		ser.stopbits=serial.STOPBITS_ONE
-		ser.bytesize=serial.EIGHTBITS
-		ser.rtscts=rtscts
-		ser.dsrdtr=dsrdtr
-
-	def __del__(self): 
-		ser.close()
-		ser.__del__()
+	def __init__(self, port, baudrate, rts_cts, dsr_dtr, timeout, verbose, logger):
 		
- 	# Function for clearing global compose variable 
-	def clear_compose(self):
-		self.compose = ""
+		try:
+			self.serial = serial.Serial(port, baudrate, rtscts=rts_cts, dsrdtr=dsr_dtr)
+		except serial.serialutil.SerialException:
+			logger.error("Couldn't open serial communication")
+			sys.exit(1)
+		
+		self.serial.parity=serial.PARITY_NONE
+		self.serial.stopbits=serial.STOPBITS_ONE
+		self.serial.bytesize=serial.EIGHTBITS
 	
-	# Function for getting modem response
-	def get_response(self, desired_response, err_messages, timeout):
-		"""Function for getting modem response
-        
-        Parameters
-        -----------	
-		desired_response : str
-        Success message of modem
 
-		errors : str[]
-        Error messages of modem	
-
-        timeout : int [seconds]
-        timeout while receiving the response (default is TIMEOUT)
-
-        Returns
-        ------- 
-        response : str 
-        Actual message that received from modem  
-        """
-	
-		if(ser.isOpen() == True):
-			self.response =""
+	def get_response(self, timeout):
+		"""
+		Function for getting modem response
+		"""
+		if self.serial.isOpen():
+			response =""
 			timer = millis()
 			
-			while 1:
-				if( millis() - timer < timeout): 
-					while(ser.inWaiting()):
+			while True:
+				delay(100)
+				if millis() - timer < timeout: 
+					while self.serial.inWaiting():
 						try: 
-							self.response += ser.read(ser.inWaiting()).decode('utf-8', errors='ignore')
-							delay(100)
+							response += self.serial.read(self.serial.inWaiting()).decode('utf-8')
 						except:
 							raise RuntimeError("An error occured while reading from serial port")
 
-					if(self.response.find(desired_response) != -1):
-						return self.response
-					
-					else:
-							if(self.response.find(err_messages) != -1):
-								raise RuntimeError("Module responsed with error message --> " + str(self.response))
 				else:
 					raise TimeoutError("timeout!")
+
+				return response
 		else:
 			raise RuntimeError("Serial Port is closed or doesn't exist...")
 
 
-	
-	# Function for sending at comamand to module
 	def send_at_comm_once(self, command):
-		"""Function for sending AT commmand to modem
+		"""
+		Function for sending AT commmand to modem
         
-        Parameters
-        -----------	
-		command : str
-        message that sent to modem 
+		params:
+			command: str, message that sent to modem
         """
 		try:
-			if (ser.isOpen() == False):
-				ret_val = ser.open()
-		except:
+			if (self.serial.isOpen() == False):
+				ret_val = self.serial.open()
+		except Exception as e:
 			raise RuntimeError("Serial port couldn't be opened!")
 		else:
 			self.compose = ""
 			self.compose = str(command) + "\r"
 			try:
-				ser.reset_input_buffer()
-				ser.write(self.compose.encode())
+				self.serial.reset_input_buffer()
+				self.serial.write(self.compose.encode())
 			except:
 				raise RuntimeError("Occured an error while writing to serial port!")
 
 		
 	# Function for sending at command to BG96_AT.
-	def send_at_comm(self, command, desired_response, err_messages, timeout = None):
-		"""Function for sending/getting AT command/response to/from modem
-        
-        Parameters
-        -----------	
-		command : str
-        Success message of modem
-
-		desired_response : str
-        Success message of modem
-
-		err_messages : str[]
-        Error messages of modem	
-
-        timeout : int [seconds]
-        timeout while receiving the response (default is TIMEOUT)
-
-        Returns
-        ------- 
-        response : str 
-        Actual message that received from modem  
-        """
-		
-		if timeout is None:
-			timeout = float(TIMEOUT)
-
+	def send_at_comm(self, command, timeout):
 		self.send_at_comm_once(command)
-		return self.get_response(desired_response,err_messages, timeout)
+		return self.get_response(timeout)
 
-def __main__():
-	
-	if(len(sys.argv) < 4):
-		raise RuntimeError("min. 3 arguments are required, you give " + str(len(sys.argv)-1))
-		return 1
-
-	at = ATCom()
-	
-	if(len(sys.argv) >= 5):
-		timeout = float(sys.argv[4])
-	else:
-		timeout = None
+@click.command()
+@click.option('-p', '--port', help='Full path of serial port.', type=str)
+@click.option('-b', '--baudrate', help='Baudrate of serial communication.', type=int)
+@click.option('-t', '--timeout', help='Command timeout value.', show_default=True, type=int)
+@click.option('-c', '--config', help='Full path of config file.', type=str)
+@click.option('-v', '--verbose', is_flag=True, help='Flag to verbose all processes.')
+@click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
+@click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
+@click.argument('at_command')
+def cli_handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command):
+	logger = Logger(verbose)
+	configs = {}
 
 	try:
-		response = at.send_at_comm(sys.argv[1],sys.argv[2], sys.argv[3], timeout)
+		config_file_path = config or "./configs.yml"
+
+		configs = open(config_file_path, "r").read()
+		configs = yaml.load(configs, Loader=yaml.FullLoader)
+	
+	except FileNotFoundError:
+		logger.info("Configs file not found, reading properties from args")
+
+	else:
+		logger.info("Found configs file, loading properties")
+
+	properties = (
+		{"id": "port", "name": "Port", "required": True},
+		{"id": "baudrate", "name": "Baudrate", "required": True},
+		{"id": "rts_cts", "name": "RTS-CTS", "required": False},
+		{"id": "dsr_dtr", "name": "DSR_DTR", "required": False},
+		{"id": "timeout", "name": "Timeout", "required": False}
+	)
+
+
+	for _property in properties:
+		if not locals().get(_property["id"], None):
+			continue
+	
+		logger.info("{} property specified as argument, overriding config file".format(_property["name"]))
+		configs[_property["id"]] = locals().get(_property["id"])
+			
+	for _property in properties:
+		if _property["required"] and _property["id"] not in configs:
+			logger.error("Property "+ _property["id"]+ " not specified, its required")
+
+	if "timeout" not in configs:
+		logger.info("Timeout property not found, using default (3)")
+		configs["timeout"] = 3
+
+	if "rts_cts" not in configs:
+		configs["rts_cts"] = rts_cts
+	if "dsr_dtr" not in configs:
+		configs["dsr_dtr"] = dsr_dtr
+	if "verbose" not in configs:
+		configs["verbose"] = verbose
+
+	at = ATCom(
+		configs["port"], 
+		configs["baudrate"], 
+		configs["rts_cts"], 
+		configs["dsr_dtr"], 
+		configs["timeout"], 
+		configs["verbose"], 
+		logger
+	)
+
+	try:
+		response = at.send_at_comm(at_command, configs["timeout"])
 	except RuntimeError as err:
 		print(str(err))
 		return 1
@@ -202,11 +191,5 @@ def __main__():
 		return 0
 
 
-if __name__ == '__main__':
-	
-	try:
-		__main__()
-	except RuntimeError as err:
-		print(str(err))
-	
-	
+if __name__ == "__main__":
+	cli_handler()
