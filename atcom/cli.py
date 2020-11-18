@@ -115,7 +115,6 @@ class ATCom:
 @click.option('-v', '--verbose', is_flag=True, help='Flag to verbose all processes.')
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
 @click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
-@click.option('--auto', 'auto_find_port', is_flag=True, help="Search ports and find automatically")
 @click.argument('at_command')
 def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, auto_find_port):
 	logger = Logger(verbose)
@@ -148,14 +147,13 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 		logger.info("{} property specified as argument, overriding config file".format(_property["name"]))
 		configs[_property["id"]] = locals().get(_property["id"])
 
-	if auto_find_port and configs.get("port"):
-		logger.info("Using specified port, automatic skipping port search")
+	if not configs.get("port"):
+		logger.info("Port not specified, scanning available ports")
 	
-	elif auto_find_port:
 		port_to_connect = decide_port()
 
 		if not port_to_connect:
-			logger.error("Couldn't find any available port automatically")
+			logger.error("Couldn't find any available port automatically, please specify the port")
 
 		logger.info("Found a modem on {}".format(port_to_connect))
 		

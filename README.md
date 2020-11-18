@@ -18,10 +18,10 @@ $ atcom [OPTIONS] AT_COMMAND
 
 ### Examples
 
-You can use **--auto** flag to detect modem port automatically. If the tool couldn't detect your modem, you can specify the port manually with **--port** parameter.
+If you run **atcom** without *--port* parameter, the tool will scan available ports and select a valid modem if it can find.
 
 ```bash
-$ atcom --auto AT
+$ atcom AT
 ```
 
 or
@@ -41,7 +41,7 @@ $ atcom --port /dev/ttyUSB2 AT
 | -v / --verbose  |     no     |           no           |        -       | Enable full log output           |
 | --rts-cts       |     no     |           no           |        -       | Enable RTS-CTS mode              |
 | --dsr-dtr       |     no     |           no           |        -       | Enable DSR-DTR mode              |
-| --auto          |     no     |           no           |        -       | Scan ports automatically         |
+
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
