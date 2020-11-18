@@ -1,5 +1,5 @@
 from subprocess import check_output
-from modems import modems
+from .modems import modems
 
 def get_available_ports():
     ports = check_output("find /sys/bus/usb/devices/usb*/ -name dev", shell=True)

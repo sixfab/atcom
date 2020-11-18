@@ -1,19 +1,13 @@
 #!/usr/bin/python3
 
-"""
-  Sixfab atcom API 
-  -
-  API for AT communication for Sixfab LTE modules. 
-  -
-  Created by Yasin Kaya (selengalp), September 14, 2020.
-"""
-
 import time
 import serial
 import click
 import sys
 import os
 import yaml
+
+from .utils import decide_port
 
 class Logger:
 	def __init__(self, verbose=False):
@@ -112,6 +106,7 @@ class ATCom:
 		self.send_at_comm_once(command)
 		return self.get_response(timeout)
 
+
 @click.command()
 @click.option('-p', '--port', help='Full path of serial port.', type=str)
 @click.option('-b', '--baudrate', help='Baudrate of serial communication.', type=int)
@@ -120,8 +115,9 @@ class ATCom:
 @click.option('-v', '--verbose', is_flag=True, help='Flag to verbose all processes.')
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
 @click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
+@click.option('--auto', 'auto_find_port', is_flag=True, help="Search ports and find automatically")
 @click.argument('at_command')
-def cli_handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command):
+def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, auto_find_port):
 	logger = Logger(verbose)
 	configs = {}
 
@@ -139,7 +135,6 @@ def cli_handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_c
 
 	properties = (
 		{"id": "port", "name": "Port", "required": True},
-		{"id": "baudrate", "name": "Baudrate", "required": True},
 		{"id": "rts_cts", "name": "RTS-CTS", "required": False},
 		{"id": "dsr_dtr", "name": "DSR_DTR", "required": False},
 		{"id": "timeout", "name": "Timeout", "required": False}
@@ -152,7 +147,20 @@ def cli_handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_c
 	
 		logger.info("{} property specified as argument, overriding config file".format(_property["name"]))
 		configs[_property["id"]] = locals().get(_property["id"])
-			
+
+	if auto_find_port and configs.get("port"):
+		logger.info("Using specified port, automatic skipping port search")
+	
+	elif auto_find_port:
+		port_to_connect = decide_port()
+
+		if not port_to_connect:
+			logger.error("Couldn't find any available port automatically")
+
+		logger.info("Found a modem on {}".format(port_to_connect))
+		
+		configs["port"] = port_to_connect
+		
 	for _property in properties:
 		if _property["required"] and _property["id"] not in configs:
 			logger.error("Property "+ _property["id"]+ " not specified, its required")
@@ -160,6 +168,10 @@ def cli_handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_c
 	if "timeout" not in configs:
 		logger.info("Timeout property not found, using default (3)")
 		configs["timeout"] = 3
+
+	if "baudrate" not in configs:
+		logger.info("Baudrate property not found, using default (115200)")
+		configs["baudrate"] = 115200
 
 	if "rts_cts" not in configs:
 		configs["rts_cts"] = rts_cts
@@ -180,15 +192,31 @@ def cli_handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_c
 
 	try:
 		response = at.send_at_comm(at_command, configs["timeout"])
+		response_lines = response.split("\n")
+		
+		if verbose:
+			print()
+
+		if len(response_lines) > 1:
+			if response_lines[0].startswith("AT"):
+				if verbose:
+					print("< ", response_lines[0])
+					print()
+					for line in response_lines[1:]:
+						print("> ", line)
+				else:
+					print("".join(response_lines[1:]))
+			else:
+				print("".join(response_lines))
+		else:
+			print(response[0])
+
 	except RuntimeError as err:
 		print(str(err))
 		return 1
 	except TimeoutError as err:
 		print (str(err)) 
 		return 2
-	else:
-		print(response)
-		return 0
 
 
 if __name__ == "__main__":
