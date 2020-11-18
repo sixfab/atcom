@@ -116,7 +116,7 @@ class ATCom:
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
 @click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
 @click.argument('at_command')
-def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, auto_find_port):
+def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command):
 	logger = Logger(verbose)
 	configs = {}
 

@@ -16,7 +16,7 @@ AUTHOR = 'Bugra Isguzar'
 # Created by Yasin Kaya
 
 REQUIRES_PYTHON = '>=3.6.0'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 
 REQUIRED = [
     'click', 'pyserial', 'pyyaml'
