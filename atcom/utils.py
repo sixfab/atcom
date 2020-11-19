@@ -36,6 +36,7 @@ def get_available_ports():
                 _port_details["interface"] = line[21:].replace("'", "")
 
         if "bus" not in _port_details["port"]:
+
             available_ports.append(_port_details)
 
     return available_ports
@@ -57,6 +58,9 @@ def decide_port():
     ports = get_available_ports()
 
     for port in ports:
+        if "vendor_id" not in port:
+            continue
+        
         for vendor, modem_data in modems.items():
             if port["vendor_id"] == vendor:
                 for modem, composition in modem_data.items():
