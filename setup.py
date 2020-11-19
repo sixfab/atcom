@@ -39,6 +39,14 @@ else:
     about['__version__'] = VERSION
 
 
+class PostInstallCommand(install):
+    """Post-installation for installation mode."""
+    def run(self):
+        install.run(self)
+
+        os.system("source ~/.profile")
+
+
 class UploadCommand(Command):
     """Support setup.py upload."""
 
@@ -103,5 +111,6 @@ setup(
     # $ setup.py publish support.
     cmdclass={
         'upload': UploadCommand,
+        'install': InstallCommand
     },
 )
