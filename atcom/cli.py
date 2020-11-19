@@ -110,7 +110,7 @@ class ATCom:
 @click.command()
 @click.option('-p', '--port', help='Full path of serial port.', type=str)
 @click.option('-b', '--baudrate', help='Baudrate of serial communication.', type=int)
-@click.option('-t', '--timeout', help='Command timeout value.', show_default=True, type=int)
+@click.option('-t', '--timeout', help='Command timeout value.', type=int)
 @click.option('-c', '--config', help='Full path of config file.', type=str)
 @click.option('-v', '--verbose', is_flag=True, help='Flag to verbose all processes.')
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
@@ -164,8 +164,8 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 			logger.error("Property "+ _property["id"]+ " not specified, its required")
 
 	if "timeout" not in configs:
-		logger.info("Timeout property not found, using default (3)")
-		configs["timeout"] = 3
+		logger.info("Timeout property not found, using default (10)")
+		configs["timeout"] = 10
 
 	if "baudrate" not in configs:
 		logger.info("Baudrate property not found, using default (115200)")
