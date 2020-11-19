@@ -7,6 +7,7 @@ import sys
 from shutil import rmtree
 
 from setuptools import find_packages, setup, Command
+from setuptools.command.install import install
 
 NAME = 'atcom'
 DESCRIPTION = 'A tool which makes AT communication easier.'
@@ -39,7 +40,7 @@ else:
     about['__version__'] = VERSION
 
 
-class PostInstallCommand(install):
+class InstallCommand(install):
     """Post-installation for installation mode."""
     def run(self):
         install.run(self)
