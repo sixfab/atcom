@@ -28,6 +28,8 @@ def get_available_ports():
                 _port_details["port"] = line[8:].replace("'", "")
             elif line.startswith("ID_VENDOR="):
                 _port_details["vendor"] = line[10:].replace("'", "")
+            elif line.startswith("ID_VENDOR_ID="):
+                _port_details["vendor_id"] = line[13:].replace("'", "")
             elif line.startswith("ID_MODEL="):
                 _port_details["model"] = line[9:].replace("'", "")
             elif line.startswith("ID_USB_INTERFACE_NUM="):
@@ -39,12 +41,35 @@ def get_available_ports():
     return available_ports
 
 
+def get_usb_composition(vendor_id):
+    lsusb = check_output("lsusb", shell=True).decode()
+    lsusb = lsusb.split("\n")
+
+    for line in lsusb:
+        for word in line.split(" "):
+            if vendor_id in word:
+                return word[len(vendor_id)+1:]
+
+    return None
+
+
 def decide_port():
     ports = get_available_ports()
 
     for port in ports:
-        for modem_name, interfaces in modems.items():
-            if modem_name in port["model"] and port["interface"] in interfaces:
-                return port["port"]
+        for vendor, modem_data in modems.items():
+            if port["vendor_id"] == vendor:
+                for modem, composition in modem_data.items():
+                    if modem not in port["model"]:
+                        continue
+
+                    modem_usb_composition = get_usb_composition(vendor)
+
+                    if not modem_usb_composition:
+                        continue
+
+                    return composition[modem_usb_composition][0]
+
+
 
     return None
