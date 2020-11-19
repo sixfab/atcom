@@ -6,8 +6,8 @@ modems = {
     },
     "1bc7": { # Telit VENDOR_ID
         "LE910": { # Modem Name
-            "1201": ["4"], # USB_COMPOSITION_ID
-            "1206": ["5"] # USB_COMPOSITION_ID
+            "1201": ["04"], # USB_COMPOSITION_ID
+            "1206": ["05"] # USB_COMPOSITION_ID
         }
     }
 }
