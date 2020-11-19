@@ -68,8 +68,7 @@ def decide_port():
                     if not modem_usb_composition:
                         continue
 
-                    return composition[modem_usb_composition][0]
-
-
+                    if port["interface"] == composition[modem_usb_composition][0]:
+                        return port["port"]
 
     return None
