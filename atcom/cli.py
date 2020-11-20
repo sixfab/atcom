@@ -203,9 +203,11 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 					for line in response_lines[1:]:
 						print("> ", line)
 				else:
-					print("".join(response_lines[1:]))
+					for line in response_lines:
+						print(line)
 			else:
-				print("".join(response_lines))
+				for line in response_lines:
+					print(line)
 		else:
 			print(response[0])
 
