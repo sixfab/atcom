@@ -117,13 +117,20 @@ class ATCom:
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
 @click.option('--version', '-v', 'show_version', is_flag=True, help="Show ATCom version")
 @click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
-@click.argument('at_command')
+@click.argument('at_command', default="")
 def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, show_version):
 	if show_version:
 		print("ATCom version: ", __version__)
+		return
 
 	logger = Logger(verbose)
 	configs = {}
+
+
+	if not at_command:
+		print("Error: AT_COMMAND missing")
+		print("Usage: t.py [OPTIONS] AT_COMMAND")
+		print("Try 't.py --help' for help.")
 
 	try:
 		config_file_path = config or "./configs.yml"
