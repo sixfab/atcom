@@ -128,9 +128,10 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 
 
 	if not at_command:
-		print("Error: AT_COMMAND missing")
+		print("Error: AT_COMMAND missing\n")
 		print("Usage: t.py [OPTIONS] AT_COMMAND")
 		print("Try 't.py --help' for help.")
+		return
 
 	try:
 		config_file_path = config or "./configs.yml"
