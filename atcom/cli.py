@@ -42,7 +42,7 @@ class ATCom:
     Sixfab AT Communication API Class
     """
 	
-	def __init__(self, port, baudrate, rts_cts, dsr_dtr, timeout, verbose, logger):
+	def __init__(self, port, baudrate, rts_cts, dsr_dtr, timeout, verbose, logger, **kwargs):
 		
 		try:
 			self.serial = serial.Serial(port, baudrate, rtscts=rts_cts, dsrdtr=dsr_dtr)
@@ -53,6 +53,9 @@ class ATCom:
 		self.serial.parity=serial.PARITY_NONE
 		self.serial.stopbits=serial.STOPBITS_ONE
 		self.serial.bytesize=serial.EIGHTBITS
+		self.logger = logger
+
+		self.find_in_response = kwargs.get("find_in_response", None)
 	
 
 	def get_response(self, timeout):
@@ -73,9 +76,18 @@ class ATCom:
 							raise RuntimeError("An error occured while reading from serial port")
 
 				else:
-					raise TimeoutError("timeout!")
+					self.logger.error("Timeout, couldn't get response")
 
-				return response
+				if "OK" in response or "ERROR" in response:
+
+					if self.find_in_response and self.find_in_response in response:
+						return {"response": response, "find": True}
+
+					elif self.find_in_response and self.find_in_response not in response:
+						return {"response": response, "find": False}
+				
+					else:
+						return response
 		else:
 			raise RuntimeError("Serial Port is closed or doesn't exist...")
 
@@ -113,12 +125,13 @@ class ATCom:
 @click.option('-b', '--baudrate', help='Baudrate of serial communication.', type=int)
 @click.option('-t', '--timeout', help='Command timeout value.', type=int)
 @click.option('-c', '--config', help='Full path of config file.', type=str)
+@click.option('-f', '--find', help='Find in response, wait until find', type=str)
 @click.option('-v', '--verbose', is_flag=True, help='Flag to verbose all processes.')
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
-@click.option('--version', '-v', 'show_version', is_flag=True, help="Show ATCom version")
+@click.option('--version', 'show_version', is_flag=True, help="Show ATCom version")
 @click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
 @click.argument('at_command', default="")
-def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, show_version):
+def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, show_version, find):
 	if show_version:
 		print("ATCom version: ", __version__)
 		return
@@ -198,11 +211,21 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 		configs["dsr_dtr"], 
 		configs["timeout"], 
 		configs["verbose"], 
-		logger
+		logger,
+		find_in_response=find
 	)
 
 	try:
 		response = at.send_at_comm(at_command, configs["timeout"])
+		status_code = 0
+
+		if type(response) == dict:
+			if response["find"] == False:
+				status_code = 1
+				logger.info("Couldn't find '{}' in response, exit status code set to 1".format(find))
+
+			response = response["response"]
+			
 		response_lines = response.split("\n")
 
 		if not response_lines or response_lines == ['']:
@@ -228,13 +251,13 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 		else:
 			print(response[0])
 
+		sys.exit(status_code)
+
 	except RuntimeError as err:
-		print(str(err))
-		return 1
+		logger.error(str(err))
 
 	except TimeoutError as err:
-		print (str(err)) 
-		return 2
+		logger.error(str(err))
 
 
 if __name__ == "__main__":
