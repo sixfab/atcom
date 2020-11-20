@@ -7,6 +7,7 @@ import sys
 import os
 import yaml
 
+from .__version__ import __version__
 from .utils import decide_port
 
 class Logger:
@@ -114,9 +115,13 @@ class ATCom:
 @click.option('-c', '--config', help='Full path of config file.', type=str)
 @click.option('-v', '--verbose', is_flag=True, help='Flag to verbose all processes.')
 @click.option('--rts-cts', 'rts_cts', is_flag=True, help="Flag to enable RTS-CTS mode")
+@click.option('--version', '-v', 'show_version', is_flag=True, help="Show ATCom version")
 @click.option('--dsr-dtr', 'dsr_dtr', is_flag=True, help="Flag to enable DSR-DTR mode")
 @click.argument('at_command')
-def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command):
+def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_command, show_version):
+	if show_version:
+		print("ATCom version: ", __version__)
+
 	logger = Logger(verbose)
 	configs = {}
 
@@ -191,6 +196,10 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 	try:
 		response = at.send_at_comm(at_command, configs["timeout"])
 		response_lines = response.split("\n")
+
+		if not response_lines or response_lines == ['']:
+			logger.error("Couldn't recieve any response")
+			return
 		
 		if verbose:
 			print()
@@ -214,6 +223,7 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 	except RuntimeError as err:
 		print(str(err))
 		return 1
+
 	except TimeoutError as err:
 		print (str(err)) 
 		return 2
