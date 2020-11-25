@@ -30,8 +30,8 @@ def get_available_ports():
                 _port_details["vendor"] = line[10:].replace("'", "")
             elif line.startswith("ID_VENDOR_ID="):
                 _port_details["vendor_id"] = line[13:].replace("'", "")
-            elif line.startswith("ID_MODEL="):
-                _port_details["model"] = line[9:].replace("'", "")
+            elif line.startswith("ID_MODEL_FROM_DATABASE="):
+                _port_details["model"] = line[23:].replace("'", "")
             elif line.startswith("ID_USB_INTERFACE_NUM="):
                 _port_details["interface"] = line[21:].replace("'", "")
 
