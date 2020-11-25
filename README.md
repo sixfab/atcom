@@ -30,7 +30,7 @@ or
 $ atcom --port /dev/ttyUSB2 AT
 ```
 
-## Configuration File
+## Configuration File
 
 You can create a configuration file for persist args. ATCom checks current directory first, reads args from config file if you have a configs.yml in **./ (current)** directory. Also you can specify the path of configuration file with **--config** parameter. 
 
