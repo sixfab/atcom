@@ -1,6 +1,6 @@
 modems = {
     "2c7c": { # Quectel VENDOR_ID
-        "EG25": { # Modem Name
+        "EC25": { # Modem Name
             "0125": ["02"] # USB_COMPOSITION_ID
         },
         "BG96": { # Modem Name
