@@ -30,14 +30,10 @@ def get_available_ports():
                 _port_details["vendor"] = line[10:].replace("'", "")
             elif line.startswith("ID_VENDOR_ID="):
                 _port_details["vendor_id"] = line[13:].replace("'", "")
-                
             elif line.startswith("ID_MODEL="):
                 _port_details["model"] = line[9:].replace("'", "")
-
             elif line.startswith("ID_MODEL_FROM_DATABASE="):
-                if _port_details.get("vendor_id", "") == "2c7c": # if it is Quectel modem
-                    _port_details["model"] = line[23:].replace("'", "")
-            
+                _port_details["model_from_database"] = line[23:].replace("'", "")
             elif line.startswith("ID_USB_INTERFACE_NUM="):
                 _port_details["interface"] = line[21:].replace("'", "")
 
@@ -70,7 +66,10 @@ def decide_port():
         for vendor, modem_data in modems.items():
             if port["vendor_id"] == vendor:
                 for modem, composition in modem_data.items():
-                    if modem not in port["model"]:
+                    modem_in_model = modem in port.get("model", "")
+                    modem_in_database_model = modem in port.get("model_from_database", "")
+
+                    if not (modem_in_model or modem_in_database_model):
                         continue
 
                     modem_usb_composition = get_usb_composition(vendor)
