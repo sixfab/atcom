@@ -32,7 +32,13 @@ $ atcom --port /dev/ttyUSB2 AT
 
 ## Configuration File
 
-You can create a configuration file for persist args. ATCom checks current directory first, reads args from config file if you have a configs.yml in **./ (current)** directory. Also you can specify the path of configuration file with **--config** parameter. 
+You can create a configuration file for persist args. ATCom checks current directory first, reads args from config file if you have a configs.yml in **./ (current)** directory. Also you can specify the path of configuration file with **--config** parameter.  Configurations files must be *yaml*, you can find an example file below.
+
+```yaml
+port: /dev/ttyUSB2
+baudrate: 115200
+timeout: 10
+```
 
 The keys, config file can contain:
 * port (str)
