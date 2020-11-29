@@ -1,45 +1,55 @@
 # ATCom
-
-ATCom is a command line tool to make AT command operations easier.
-
+​
+AT commands are the instructions used to control and communicate with the cellular modems. In order to, send AT commands to a cellular device, one needs to check several parameters and might need a serial monitor tool. 
+ATCom is a command-line interface tool that makes AT command operations easier.
+​
 ## Installation
-
+​
+[pip3](https://pip.pypa.io/en/stable/) is required to install the **atcom**. pip3 can be intalled by 
+​
+```bash
+sudo apt install python3-pip
+```
+​
 Use the package manager [pip3](https://pip.pypa.io/en/stable/) to install **atcom**.
-
+​
 ```bash
 pip3 install atcom
 ```
-
+​
 ## Usage
-
+​
 ```bash
 $ atcom [OPTIONS] AT_COMMAND
 ```
-
+​
 ### Examples
-
-If you run **atcom** without *--port* parameter, the tool will scan available ports and select a valid modem if it can find.
-
+​
+Running **atcom** without *--port* parameter, scans for available ports, and selects a valid modem port if available.
+​
 ```bash
 $ atcom AT
 ```
-
+​
 or
-
+​
 ```bash
 $ atcom --port /dev/ttyUSB2 AT
 ```
-
+​
 ## Configuration File
-
-You can create a configuration file for persist args. ATCom checks current directory first, reads args from config file if you have a configs.yml in **./ (current)** directory. Also you can specify the path of configuration file with **--config** parameter.  Configurations files must be *yaml*, you can find an example file below.
-
+​
+Configuration file(configs.yaml) can be created for persist args. 
+ATCom first checks the current working directory for the configs.yml to read the arguments from. The path of the configuration file can also be specified using the **--config** parameter. 
+​
+The configuration file must be in *yaml* format, for example: 
+​
 ```yaml
 port: /dev/ttyUSB2
 baudrate: 115200
 timeout: 10
 ```
-
+​
 The keys, config file can contain:
 * port (str)
 * baudrate (int)
@@ -47,19 +57,19 @@ The keys, config file can contain:
 * rts_cts (boolean)
 * dsr_dtr (boolean)
 * verbose (boolean)
-
+​
 ### Parameters
-
-|                 | need value |       is required      |     default    |            description           |
-|-----------------|------------|:----------------------:|:--------------:|:--------------------------------:|
-| -p / --port     |     yes    | yes, unless--auto flag |        -       | PORT of modem                    |
-| -b / --baudrate |     yes    |           no           |     115200     | Baudrate of serial communication |
-| -t / --timeout  |     yes    |           no           |        3       | Communication timeout            |
-| -c / --config   |     yes    |           no           | ./configs.yaml | Path of configurations file      |
-| -v / --verbose  |     no     |           no           |        -       | Enable full log output           |
-| --rts-cts       |     no     |           no           |        -       | Enable RTS-CTS mode              |
-| --dsr-dtr       |     no     |           no           |        -       | Enable DSR-DTR mode              |
-
-
+​
+|                 |     default    |            description           |
+|-----------------|:--------------:|:--------------------------------:|
+| -p / --port     |        -       | PORT of modem                    |
+| -b / --baudrate |     115200     | Baudrate for serial communication|
+| -t / --timeout  |        10      | Communication timeout            |
+| -c / --config   | ./configs.yaml | Configurations file Path         |
+| -v / --verbose  |        -       | Enable full log output           |
+| --rts-cts       |        -       | Enable RTS-CTS mode              |
+| --dsr-dtr       |        -       | Enable DSR-DTR mode              |
+​
+​
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
