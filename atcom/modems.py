@@ -14,6 +14,9 @@ modems = {
         "LE910": { # Modem Name
             "1201": ["04"], # USB_COMPOSITION_ID
             "1206": ["05"] # USB_COMPOSITION_ID
+        },
+        "ME910": {
+            "1101": ["01"]
         }
     }
 }
