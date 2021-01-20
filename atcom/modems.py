@@ -3,6 +3,9 @@ modems = {
         "EC25": { # Modem Name
             "0125": ["02"] # USB_COMPOSITION_ID
         },
+        "EC21": { # Modem Name
+            "0121": ["02"] # USB_COMPOSITION_ID
+        },
         "BG96": { # Modem Name
             "0296": ["02"] # USB_COMPOSITION_ID
         },
