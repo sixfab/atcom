@@ -45,7 +45,7 @@ class InstallCommand(install):
     def run(self):
         install.run(self)
 
-        os.system("source ~/.profile")
+        os.system('/bin/bash -c "source ~/.profile"')
 
 
 class UploadCommand(Command):
