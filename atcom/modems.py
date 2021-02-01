@@ -10,7 +10,7 @@ modems = {
             "0296": ["02"] # USB_COMPOSITION_ID
         },
         "BG95": { # Modem Name
-            "0296": ["02"] # USB_COMPOSITION_ID
+            "0700": ["02"] # USB_COMPOSITION_ID
         }
     },
     "1bc7": { # Telit VENDOR_ID
