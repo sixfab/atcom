@@ -38,7 +38,6 @@ def get_available_ports():
                 _port_details["interface"] = line[21:].replace("'", "")
 
         if "bus" not in _port_details["port"]:
-
             available_ports.append(_port_details)
 
     return available_ports
@@ -68,12 +67,11 @@ def decide_port():
                 for modem, composition in modem_data.items():
                     modem_in_model = modem in port.get("model", "")
                     modem_in_database_model = modem in port.get("model_from_database", "")
-
-                    if not (modem_in_model or modem_in_database_model):
-                        continue
-
                     modem_usb_composition = get_usb_composition(vendor)
-
+                    is_bg95 = modem_usb_composition == "0700" and modem == "BG95"
+                        
+                    if not (modem_in_model or modem_in_database_model or is_bg95):
+                        continue
                     if not modem_usb_composition:
                         continue
 
