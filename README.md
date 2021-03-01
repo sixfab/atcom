@@ -69,7 +69,3 @@ The keys, config file can contain:
 | -v / --verbose  |        -       | Enable full log output           |
 | --rts-cts       |        -       | Enable RTS-CTS mode              |
 | --dsr-dtr       |        -       | Enable DSR-DTR mode              |
-​
-​
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
