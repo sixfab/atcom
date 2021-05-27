@@ -1,26 +1,39 @@
-modems = {
-    "2c7c": { # Quectel VENDOR_ID
-        "EC25": { # Modem Name
-            "0125": ["02"] # USB_COMPOSITION_ID
-        },
-        "EC21": { # Modem Name
-            "0121": ["02"] # USB_COMPOSITION_ID
-        },
-        "BG96": { # Modem Name
-            "0296": ["02"] # USB_COMPOSITION_ID
-        },
-        "BG95": { # Modem Name
-            "0700": ["02"] # USB_COMPOSITION_ID
-        }
-    },
-    "1bc7": { # Telit VENDOR_ID
-        "LE910": { # Modem Name
-            "1201": ["04"], # USB_COMPOSITION_ID
-            "1206": ["05"] # USB_COMPOSITION_ID
-        },
-        "ME910": {
-            "1101": ["01"],
-            "1102": ["01"]
-        }
-    }
-}
+
+class Modem():
+    def __init__(
+        self, 
+        vid, 
+        pid, 
+        vendor_name, 
+        product_name, 
+        com_ifs
+        ):
+        self.vid = vid
+        self.pid = pid
+        self.vendor_name = vendor_name
+        self.product_name = product_name
+        self.com_ifs = com_ifs
+    
+# Quectel 
+ec25 = Modem(vid="2c7c", pid="0125", vendor_name="Quectel", product_name="EC25", com_ifs="if02")
+ec21 = Modem(vid="2c7c", pid="0121", vendor_name="Quectel", product_name="EC21", com_ifs="if02")
+bg96 = Modem(vid="2c7c", pid="0296", vendor_name="Quectel", product_name="BG96", com_ifs="if02")
+bg95 = Modem(vid="2c7c", pid="0700", vendor_name="Quectel", product_name="BG95", com_ifs="if02")
+
+# Telit
+le910c1_comp1 = Modem(vid="1bc7", pid="1201", vendor_name="Telit", product_name="LE910C1", com_ifs="if04")
+le910c1_comp2 = Modem(vid="1bc7", pid="1206", vendor_name="Telit", product_name="LE910C1", com_ifs="if05")
+me910c1_comp1 = Modem(vid="1bc7", pid="1101", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
+me910c1_comp2 = Modem(vid="1bc7", pid="1102", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
+
+# List of supported modem
+supported_modems = [
+    ec25,
+    ec21,
+    bg96,
+    bg95,
+    le910c1_comp1,
+    le910c1_comp2,
+    me910c1_comp1,
+    le910c1_comp2,
+    ]
