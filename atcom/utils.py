@@ -6,9 +6,6 @@ def find_cellular_modem():
 
     for modem in supported_modems:
         if output.find(modem.vid) != -1 and output.find(modem.pid) != -1:
-            vid = modem.vid
-            pid = modem.pid
-            #print("Supported modem detected -->", "VID:", vid, "PID:", pid, "Vendor:", modem.vendor_name, "Product:", modem.product_name)
             return modem
     raise Exception("No supported modem exist!")
 
@@ -26,8 +23,3 @@ def decide_port():
                 port_name = "/dev/" + line[start:]
                 return port_name
         return None
-
-
-if __name__ == "__main__":
-    port_name = decide_port()
-    print(port_name)

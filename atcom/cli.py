@@ -100,9 +100,9 @@ class ATCom:
 			command: str, message that sent to modem
         """
 		try:
-			if (self.serial.isOpen() == False):
-				ret_val = self.serial.open()
-		except Exception as e:
+			if not self.serial.isOpen():
+				self.serial.open()
+		except:
 			raise RuntimeError("Serial port couldn't be opened!")
 		else:
 			self.compose = ""
@@ -114,7 +114,6 @@ class ATCom:
 				raise RuntimeError("Occured an error while writing to serial port!")
 
 		
-	# Function for sending at command to BG96_AT.
 	def send_at_comm(self, command, timeout):
 		self.send_at_comm_once(command)
 		return self.get_response(timeout)
@@ -258,7 +257,3 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 
 	except TimeoutError as err:
 		logger.error(str(err))
-
-
-if __name__ == "__main__":
-	cli_handler()
