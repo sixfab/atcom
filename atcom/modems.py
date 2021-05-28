@@ -1,5 +1,8 @@
 
 class Modem():
+    desc_vendor=None
+    desc_product=None
+
     def __init__(
         self, 
         vid, 
