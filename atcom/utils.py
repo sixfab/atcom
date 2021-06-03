@@ -1,5 +1,6 @@
 from subprocess import check_output
-from .modems import modems
+from .modems import supported_modems
+
 
 def get_available_ports():
     ports = check_output("find /sys/bus/usb/devices/usb*/ -name dev", shell=True)
@@ -34,8 +35,10 @@ def get_available_ports():
                 _port_details["model"] = line[9:].replace("'", "")
             elif line.startswith("ID_MODEL_FROM_DATABASE="):
                 _port_details["model_from_database"] = line[23:].replace("'", "")
+            elif line.startswith("ID_MODEL_ID="):
+                _port_details["product_id"] = line[12:].replace("'", "")
             elif line.startswith("ID_USB_INTERFACE_NUM="):
-                _port_details["interface"] = line[21:].replace("'", "")
+                _port_details["interface"] = "if"+line[21:].replace("'", "")
 
         if "bus" not in _port_details["port"]:
             available_ports.append(_port_details)
@@ -43,39 +46,31 @@ def get_available_ports():
     return available_ports
 
 
-def get_usb_composition(vendor_id):
-    lsusb = check_output("lsusb", shell=True).decode()
-    lsusb = lsusb.split("\n")
+def find_cellular_modem():
+    """function to find supported modem"""
+    output = check_output("lsusb", shell=True).decode()
 
-    for line in lsusb:
-        for word in line.split(" "):
-            if vendor_id in word:
-                return word[len(vendor_id)+1:]
-
-    return None
+    for modem in supported_modems:
+        if output.find(modem.vid) != -1 and output.find(modem.pid) != -1:
+            return modem
+    raise Exception("No supported modem exist!")
 
 
 def decide_port():
-    ports = get_available_ports()
-
-    for port in ports:
-        if "vendor_id" not in port:
-            continue
-        
-        for vendor, modem_data in modems.items():
-            if port["vendor_id"] == vendor:
-                for modem, composition in modem_data.items():
-                    modem_in_model = modem in port.get("model", "")
-                    modem_in_database_model = modem in port.get("model_from_database", "")
-                    modem_usb_composition = get_usb_composition(vendor)
-                    is_bg95 = modem_usb_composition == "0700" and modem == "BG95"
-                        
-                    if not (modem_in_model or modem_in_database_model or is_bg95):
-                        continue
-                    if not modem_usb_composition:
-                        continue
-
-                    if port["interface"] == composition[modem_usb_composition][0]:
-                        return port["port"]
-
-    return None
+    """function to decide port name of supported modem"""
+    try:
+        modem = find_cellular_modem()
+    except:
+        return (None, None)
+    else:
+        ports = get_available_ports()
+        for port in ports:
+            if  modem.com_ifs in port.values() and \
+                modem.vid in port.values() and \
+                modem.pid in port.values():
+                
+                port_name = port.get("port")
+                modem.desc_vendor = port.get("vendor")
+                modem.desc_product = port.get("model", port.get("model_from_database"))
+                return (port_name, modem)
+        return (None, None)

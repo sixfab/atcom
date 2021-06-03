@@ -100,9 +100,9 @@ class ATCom:
 			command: str, message that sent to modem
         """
 		try:
-			if (self.serial.isOpen() == False):
-				ret_val = self.serial.open()
-		except Exception as e:
+			if not self.serial.isOpen():
+				self.serial.open()
+		except:
 			raise RuntimeError("Serial port couldn't be opened!")
 		else:
 			self.compose = ""
@@ -114,7 +114,6 @@ class ATCom:
 				raise RuntimeError("Occured an error while writing to serial port!")
 
 		
-	# Function for sending at command to BG96_AT.
 	def send_at_comm(self, command, timeout):
 		self.send_at_comm_once(command)
 		return self.get_response(timeout)
@@ -176,12 +175,17 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 	if not configs.get("port"):
 		logger.info("Port not specified, scanning available ports")
 	
-		port_to_connect = decide_port()
+		detected = decide_port()
+		port_to_connect = detected[0]
+		modem = detected[1]
 
 		if not port_to_connect:
 			logger.error("Couldn't find any available port automatically, please specify the port")
-
-		logger.info("Found a modem on {}".format(port_to_connect))
+		else:
+			logger.info("Found a modem on {}".format(port_to_connect))
+			logger.info("[M] VID:PID-> {}:{}".format(modem.vid,modem.pid))
+			logger.info("[M] Vendor-> {}:{}".format(modem.vendor_name, modem.desc_vendor))
+			logger.info("[M] Product-> {}:{}".format(modem.product_name,modem.desc_product))
 		
 		configs["port"] = port_to_connect
 		
@@ -258,7 +262,3 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 
 	except TimeoutError as err:
 		logger.error(str(err))
-
-
-if __name__ == "__main__":
-	cli_handler()
