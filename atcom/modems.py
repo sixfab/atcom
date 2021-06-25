@@ -29,6 +29,8 @@ le910c1_comp1 = Modem(vid="1bc7", pid="1201", vendor_name="Telit", product_name=
 le910c1_comp2 = Modem(vid="1bc7", pid="1206", vendor_name="Telit", product_name="LE910C1", com_ifs="if05")
 me910c1_comp1 = Modem(vid="1bc7", pid="1101", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
 me910c1_comp2 = Modem(vid="1bc7", pid="1102", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
+fn980n_comp1 = Modem(vid="1bc7", pid="1050", vendor_name="Telit", product_name="FN980n", com_ifs="if05")
+fn980n_comp3 = Modem(vid="1bc7", pid="1053", vendor_name="Telit", product_name="FN980n", com_ifs="if05")
 
 # List of supported modem
 supported_modems = [
@@ -41,4 +43,6 @@ supported_modems = [
     bg96,
     bg95,
     ep06,
+    fn980n_comp1,
+    fn980n_comp3,
     ]
