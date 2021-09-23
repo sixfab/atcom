@@ -27,6 +27,7 @@ ep06 = Modem(vid="2c7c", pid="0306", vendor_name="Quectel", product_name="EP06",
 # Telit
 le910cx_comp1 = Modem(vid="1bc7", pid="1201", vendor_name="Telit", product_name="LE910Cx", com_ifs="if04")
 le910cx_comp2 = Modem(vid="1bc7", pid="1206", vendor_name="Telit", product_name="LE910Cx", com_ifs="if05")
+le910cx_comp3 = Modem(vid="1bc7", pid="1203", vendor_name="Telit", product_name="LE910Cx", com_ifs="if05")
 me910c1_comp1 = Modem(vid="1bc7", pid="1101", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
 me910c1_comp2 = Modem(vid="1bc7", pid="1102", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
 
