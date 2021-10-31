@@ -4,20 +4,20 @@ class Modem():
     desc_product=None
 
     def __init__(
-        self, 
-        vid, 
-        pid, 
-        vendor_name, 
-        product_name, 
-        com_ifs
+        self,
+        vid,
+        pid,
+        vendor_name,
+        product_name,
+        com_ifs 
         ):
         self.vid = vid
         self.pid = pid
         self.vendor_name = vendor_name
         self.product_name = product_name
         self.com_ifs = com_ifs
-    
-# Quectel 
+
+# Quectel
 ec25 = Modem(vid="2c7c", pid="0125", vendor_name="Quectel", product_name="EC25", com_ifs="if02")
 ec21 = Modem(vid="2c7c", pid="0121", vendor_name="Quectel", product_name="EC21", com_ifs="if02")
 bg96 = Modem(vid="2c7c", pid="0296", vendor_name="Quectel", product_name="BG96", com_ifs="if02")
@@ -27,8 +27,15 @@ ep06 = Modem(vid="2c7c", pid="0306", vendor_name="Quectel", product_name="EP06",
 # Telit
 le910cx_comp1 = Modem(vid="1bc7", pid="1201", vendor_name="Telit", product_name="LE910Cx", com_ifs="if04")
 le910cx_comp2 = Modem(vid="1bc7", pid="1206", vendor_name="Telit", product_name="LE910Cx", com_ifs="if05")
+le910cx_wwx_comp0 = Modem(vid="1bc7", pid="1031", vendor_name="Telit", product_name="LE910Cx", com_ifs="if02") # rmnet
+le910cx_wwx_comp1 = Modem(vid="1bc7", pid="1033", vendor_name="Telit", product_name="LE910Cx", com_ifs="if02") # ecm
+# le910cx_wwx_comp2 = Modem(vid="1bc7", pid="1034", vendor_name="Telit", product_name="LE910Cx", com_ifs="if02") # no-driver
+# le910cx_wwx_comp3 = Modem(vid="1bc7", pid="1035", vendor_name="Telit", product_name="LE910Cx", com_ifs="if02") # no-driver
+# le910cx_wwx_comp4 = Modem(vid="1bc7", pid="1036", vendor_name="Telit", product_name="LE910Cx", com_ifs="if02") # no-driver
+
 me910c1_comp1 = Modem(vid="1bc7", pid="1101", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
 me910c1_comp2 = Modem(vid="1bc7", pid="1102", vendor_name="Telit", product_name="ME910C1", com_ifs="if01")
+
 
 # Thales
 plsx3_comp1 = Modem(vid="1e2d", pid="0069", vendor_name="Thales/Cinterion", product_name="PLSx3", com_ifs="if04") # ecm
@@ -40,6 +47,8 @@ supported_modems = [
     ec21,
     le910cx_comp1,
     le910cx_comp2,
+    le910cx_wwx_comp0,
+    le910cx_wwx_comp1,
     me910c1_comp1,
     me910c1_comp2,
     bg96,
