@@ -17,6 +17,7 @@ class Modem():
         self.product_name = product_name
         self.com_ifs = com_ifs
 
+        
 supported_modems = [
     # Quectel
     Modem(vid="2c7c", pid="0125", vendor_name="Quectel", product_name="EC25", com_ifs="if02"),

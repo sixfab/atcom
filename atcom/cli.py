@@ -79,6 +79,10 @@ class ATCom:
 					self.logger.error("Timeout, couldn't get response")
 
 				if "OK" in response or "ERROR" in response:
+					if self.find_in_response:
+						self.find_in_response=self.find_in_response.replace("\\r","\r")
+						self.find_in_response=self.find_in_response.replace("\\n","\n")
+						response=response.replace("\r", "\n")
 
 					if self.find_in_response and self.find_in_response in response:
 						return {"response": response, "find": True}
