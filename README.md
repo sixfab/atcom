@@ -22,6 +22,11 @@ pip3 install atcom
 ```bash
 $ atcom [OPTIONS] AT_COMMAND
 ```
+
+> ### Warning: 
+> If you need to send `"` or `'` character, you should use escape character `\` before it.
+> ### Example: 
+> ```atcom AT+CGDCONT=1,\"IP\",\"internet\"```
 ​
 ### Examples
 ​
