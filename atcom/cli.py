@@ -145,8 +145,8 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 
 	if not at_command:
 		print("Error: AT_COMMAND missing\n")
-		print("Usage: t.py [OPTIONS] AT_COMMAND")
-		print("Try 't.py --help' for help.")
+		print("Usage: atcom [OPTIONS] AT_COMMAND")
+		print("Try 'atcom --help' for help.")
 		return
 
 	try:
