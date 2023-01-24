@@ -8,7 +8,7 @@ import os
 import yaml
 
 from .__version__ import __version__
-from .utils import decide_port
+from .utils import decide_port, get_available_ports
 
 class Logger:
 	def __init__(self, verbose=False):
@@ -142,6 +142,18 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 	logger = Logger(verbose)
 	configs = {}
 
+	if port is not None:
+		for i in get_available_ports():
+			if i["port"] == port:
+				configs["port"] = port
+				break
+	# print(f"PORT: {port}")
+ 
+	if baudrate is not None:
+		configs["baudrate"] = baudrate
+ 
+	if timeout is not None:
+		configs["timeout"] = timeout
 
 	if not at_command:
 		print("Error: AT_COMMAND missing\n")
