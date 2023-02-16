@@ -77,6 +77,7 @@ class ATCom:
 
 				else:
 					self.logger.error("Timeout, couldn't get response")
+					raise RuntimeError("Timeout, couldn't get response")
 
 				if "OK" in response or "ERROR" in response:
 					if self.find_in_response:
