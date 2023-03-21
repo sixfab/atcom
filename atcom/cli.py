@@ -67,7 +67,7 @@ class ATCom:
 			timer = millis()
 			
 			while True:
-				delay(100)
+				delay(2)
 				if millis() - timer < timeout: 
 					while self.serial.inWaiting():
 						try: 
@@ -163,6 +163,7 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 
 	properties = (
 		{"id": "port", "name": "Port", "required": True},
+		{"id": "baudrate", "name": "Baudrate", "required": False},
 		{"id": "rts_cts", "name": "RTS-CTS", "required": False},
 		{"id": "dsr_dtr", "name": "DSR_DTR", "required": False},
 		{"id": "timeout", "name": "Timeout", "required": False}
@@ -173,7 +174,10 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 		if not locals().get(_property["id"], None):
 			continue
 	
-		logger.info("{} property specified as argument, overriding config file".format(_property["name"]))
+		logger.info("{} property specified as argument, overriding config file: {}"
+		.format(_property["name"], locals().get(_property["id"]))
+		)
+
 		configs[_property["id"]] = locals().get(_property["id"])
 
 	if not configs.get("port"):
