@@ -39,6 +39,10 @@ def get_available_ports():
                 _port_details["product_id"] = line[12:].replace("'", "")
             elif line.startswith("ID_USB_INTERFACE_NUM="):
                 _port_details["interface"] = "if"+line[21:].replace("'", "")
+            elif line.startswith("ID_USB_VENDOR_ID="):
+                _port_details["ID_USB_VENDOR_ID"] = line[17:].replace("'", "")
+            elif line.startswith("ID_USB_MODEL_ID="):
+                _port_details["ID_USB_MODEL_ID"] = line[16:].replace("'", "")
 
         if "bus" not in _port_details["port"]:
             available_ports.append(_port_details)
@@ -68,7 +72,7 @@ def decide_port():
             if  modem.com_ifs in port.values() and \
                 modem.vid in port.values() and \
                 modem.pid in port.values():
-                
+
                 port_name = port.get("port")
                 modem.desc_vendor = port.get("vendor")
                 modem.desc_product = port.get("model", port.get("model_from_database"))
