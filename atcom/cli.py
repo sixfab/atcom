@@ -4,7 +4,6 @@ import time
 import serial
 import click
 import sys
-import os
 import yaml
 
 from .__version__ import __version__
@@ -231,8 +230,8 @@ def handler(port, baudrate, timeout, verbose, rts_cts, dsr_dtr, config, at_comma
 		response = at.send_at_comm(at_command, configs["timeout"])
 		status_code = 0
 
-		if type(response) == dict:
-			if response["find"] == False:
+		if isinstance(response, dict):
+			if response["find"] is False:
 				status_code = 1
 				logger.info("Couldn't find '{}' in response, exit status code set to 1".format(find))
 
